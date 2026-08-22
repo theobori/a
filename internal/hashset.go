@@ -8,7 +8,7 @@ func (hs *Hashset[T]) Set(k T) {
 	hs.m[k] = struct{}{}
 }
 
-func (hs *Hashset[T]) Delete(k T) {
+func (hs *Hashset[T]) Remove(k T) {
 	delete(hs.m, k)
 }
 
