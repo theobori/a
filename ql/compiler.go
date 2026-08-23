@@ -40,7 +40,6 @@ func (c *Compiler) compileBinaryGeneric(binary *ExpressionBinary, operationJump 
 
 	c.emitByte(operationJump)
 	c.emitByte(0)
-	// TODO: Increase size to 16 bits
 	c.emitByte(OperationPop)
 	jumpIndex := len(c.chunk.Code) - 2
 
@@ -49,7 +48,6 @@ func (c *Compiler) compileBinaryGeneric(binary *ExpressionBinary, operationJump 
 		return err
 	}
 
-	// TODO: Increase size to 16 bits
 	if len(c.chunk.Code) >= 256 {
 		return fmt.Errorf("Cannot jump above 255.")
 	}
