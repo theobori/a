@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/alecthomas/kingpin/v2"
+	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/theobori/a/filename"
 	"github.com/theobori/a/operation"
 )
@@ -75,7 +77,28 @@ func Query() error {
 		return err
 	}
 
-	fmt.Println(files)
+	idx, err := fuzzyfinder.Find(
+		files,
+		func(i int) string {
+			return files[i].Path
+		},
+		fuzzyfinder.WithPreviewWindow(func(i, w, h int) string {
+			if i == -1 {
+				return ""
+			}
+
+			joinedTags := strings.Join(files[i].Metadata.Tags.List(), ", ")
+
+			return fmt.Sprintf("Title: %s\nTags: %s\nExtension: %s",
+				files[i].Metadata.Title,
+				joinedTags,
+				files[i].Metadata.Ext)
+		}))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(files[idx].Path)
 
 	return nil
 }
