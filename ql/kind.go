@@ -1,6 +1,6 @@
 package ql
 
-type Kind int
+type Kind byte
 
 func (k *Kind) String() string {
 	switch *k {

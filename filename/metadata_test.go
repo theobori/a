@@ -3,6 +3,8 @@ package filename
 import (
 	"fmt"
 	"testing"
+
+	"github.com/theobori/a/internal"
 )
 
 func TestNewMetadata(t *testing.T) {
@@ -47,8 +49,20 @@ func TestNewMetadata(t *testing.T) {
 		{title: "title", tags: []string{}, ext: "zzz"},
 	}
 
+	optionsKO, err := NewOptions(
+		"__",
+		"_",
+		internal.NewHashset(AllowedFileExtsDefault),
+		false,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	for _, testKO := range testsKO {
-		_, err := NewMetadata(testKO.title, testKO.tags, testKO.ext)
+		_, err := NewMetadataWithOptions(
+			testKO.title, testKO.tags, testKO.ext, optionsKO,
+		)
 		if err == nil {
 			t.Fatalf(
 				"Filename with the title '%s' and the tags %v should have failed test.",

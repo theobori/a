@@ -53,7 +53,7 @@ func NewMetadataWithOptions(title string, tags []string, ext string, options *Op
 	if strings.Contains(title, options.partsDelimitor) {
 		return nil, fmt.Errorf("'%s' is not allowed in the title.", options.partsDelimitor)
 	}
-	if ext != "" && !options.allowedFileExts.Exists(ext) {
+	if ext != "" && !options.IsFileExtAllowed(ext) {
 		return nil, fmt.Errorf("The file extension name '%s' is not allowed.", ext)
 	}
 
@@ -73,7 +73,7 @@ func NewMetadataWithOptions(title string, tags []string, ext string, options *Op
 		tagsHs.Set(tag)
 	}
 
-	ext = strings.TrimPrefix(strings.TrimSpace(ext), ".")
+	ext = strings.TrimSpace(ext)
 
 	return &Metadata{
 		Title:   title,

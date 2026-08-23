@@ -14,10 +14,10 @@ func TestParser(t *testing.T) {
 	}{
 		{
 			source: "(tag \"tag1\")",
-			expectedExpression: ExpressionFunctionCall{
+			expectedExpression: &ExpressionFunctionCall{
 				FunctionName: "tag",
 				Arguments: []Expression{
-					ExpressionLiteral{
+					&ExpressionLiteral{
 						Value: "tag1",
 					},
 				},
@@ -25,41 +25,87 @@ func TestParser(t *testing.T) {
 		},
 		{
 			source: `(and
-						(or
-						    (and (title "hello")))
-					 (tag "tag1"))`,
-			expectedExpression: ExpressionBinary{
+						(or 
+							(and
+								(title "hello")))
+						(title "title1")
+						(title "title2")
+						(title "title3")
+					    (tag "tag1"))`,
+			expectedExpression: &ExpressionBinary{
 				Operator: Token{
 					Kind:   KindAnd,
 					Lexeme: "and",
 				},
-				Left: ExpressionBinary{
+				Left: &ExpressionBinary{
 					Operator: Token{
 						Kind:   KindOr,
 						Lexeme: "or",
 					},
-					Left: ExpressionBinary{
+					Left: &ExpressionBinary{
 						Operator: Token{
 							Kind:   KindAnd,
 							Lexeme: "and",
 						},
-						Left: ExpressionFunctionCall{
+						Left: &ExpressionFunctionCall{
 							FunctionName: "title",
 							Arguments: []Expression{
-								ExpressionLiteral{
+								&ExpressionLiteral{
 									Value: "hello",
 								},
 							},
 						},
-						Right: nil,
+						Right: &ExpressionLiteral{Value: true},
 					},
-					Right: nil,
+					Right: &ExpressionLiteral{Value: false},
 				},
-				Right: ExpressionFunctionCall{
-					FunctionName: "tag",
-					Arguments: []Expression{
-						ExpressionLiteral{
-							Value: "tag1",
+				Right: &ExpressionBinary{
+					Operator: Token{
+						Kind:   KindAnd,
+						Lexeme: "and",
+					},
+					Left: &ExpressionFunctionCall{
+						FunctionName: "title",
+						Arguments: []Expression{
+							&ExpressionLiteral{
+								Value: "title1",
+							},
+						},
+					},
+					Right: &ExpressionBinary{
+						Operator: Token{
+							Kind:   KindAnd,
+							Lexeme: "and",
+						},
+						Left: &ExpressionFunctionCall{
+							FunctionName: "title",
+							Arguments: []Expression{
+								&ExpressionLiteral{
+									Value: "title2",
+								},
+							},
+						},
+						Right: &ExpressionBinary{
+							Operator: Token{
+								Kind:   KindAnd,
+								Lexeme: "and",
+							},
+							Left: &ExpressionFunctionCall{
+								FunctionName: "title",
+								Arguments: []Expression{
+									&ExpressionLiteral{
+										Value: "title3",
+									},
+								},
+							},
+							Right: &ExpressionFunctionCall{
+								FunctionName: "tag",
+								Arguments: []Expression{
+									&ExpressionLiteral{
+										Value: "tag1",
+									},
+								},
+							},
 						},
 					},
 				},

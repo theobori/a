@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	app = kingpin.New("a", "My opinionated note taking KISS CLI app.")
+	app = kingpin.New("a", "My opinionated note taking CLI tool.")
 
 	create            = app.Command("create", "Create a new note file.")
 	createDirectory   = create.Arg("directory", "Base directory path.").Default("./").String()
@@ -23,6 +23,10 @@ var (
 	rename         = app.Command("rename", "Rename a note file.")
 	renamePath     = rename.Arg("path", "File path.").Required().String()
 	renameInsecure = rename.Flag("insecure", "Skip the source filename verification.").Bool()
+
+	query          = app.Command("query", "Filter files in the base directory using a custom query language.")
+	queryDirectory = query.Arg("directory", "Base directory path.").Default("./").String()
+	queryQuery     = query.Flag("query", "The query to filter file metadatas.").Default("\"all\"").String()
 
 	// Default for the moment
 	options = filename.NewOptionsDefault()
@@ -64,18 +68,34 @@ func Rename() error {
 	return nil
 }
 
-func main() {
-	var err error
-
-	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
-	case create.FullCommand():
-		err = Create()
-	case edit.FullCommand():
-		err = Edit()
-	case rename.FullCommand():
-		err = Rename()
+func Query() error {
+	files, err := operation.Query(*queryDirectory, *queryQuery, options)
+	if err != nil {
+		return err
 	}
 
+	fmt.Println(files)
+
+	return nil
+}
+
+func runCommand() error {
+	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
+	case create.FullCommand():
+		return Create()
+	case edit.FullCommand():
+		return Edit()
+	case rename.FullCommand():
+		return Rename()
+	case query.FullCommand():
+		return Query()
+	default:
+		return fmt.Errorf("invalid command.")
+	}
+}
+
+func main() {
+	err := runCommand()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

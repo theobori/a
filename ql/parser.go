@@ -46,8 +46,8 @@ func (p *Parser) consume(kind Kind) (Token, error) {
 func (p *Parser) parseBinary() (Expression, error) {
 	previousToken := p.peekPrevious()
 
-	binary := ExpressionBinary{nil, previousToken, nil}
-	curr := &binary
+	binary := &ExpressionBinary{nil, previousToken, nil}
+	curr := binary
 
 	for {
 		token := p.peek()
@@ -65,15 +65,24 @@ func (p *Parser) parseBinary() (Expression, error) {
 		} else if curr.Right == nil {
 			curr.Right = expression
 		} else {
-			child := ExpressionBinary{curr.Right, previousToken, expression}
-			curr.Right = child
-			curr = &child
+			curr.Right = &ExpressionBinary{curr.Right, previousToken, expression}
+			curr = curr.Right.(*ExpressionBinary)
 		}
 	}
 
 	_, err := p.consume(KindRightParens)
 	if err != nil {
 		return nil, err
+	}
+
+	// I want and to returns true by default on every branch
+	// for and.
+	// The opposite for or.
+	if binary.Left == nil {
+		binary.Left = &ExpressionLiteral{Value: previousToken.Kind == KindAnd}
+	}
+	if binary.Right == nil {
+		binary.Right = &ExpressionLiteral{Value: previousToken.Kind == KindAnd}
 	}
 
 	return binary, nil
@@ -102,7 +111,7 @@ func (p *Parser) parseFunction() (Expression, error) {
 		return nil, err
 	}
 
-	return ExpressionFunctionCall{
+	return &ExpressionFunctionCall{
 		Arguments:    arguments,
 		FunctionName: previousToken.Lexeme,
 	}, nil
@@ -111,7 +120,7 @@ func (p *Parser) parseFunction() (Expression, error) {
 func (p *Parser) parseString() (Expression, error) {
 	previous := p.peekPrevious()
 
-	return ExpressionLiteral{
+	return &ExpressionLiteral{
 		Value: previous.Literal,
 	}, nil
 }

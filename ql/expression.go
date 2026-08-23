@@ -15,8 +15,8 @@ type ExpressionBinary struct {
 	Right    Expression
 }
 
-func (e ExpressionBinary) String() string {
-	return "<binary>"
+func (e *ExpressionBinary) String() string {
+	return fmt.Sprintf("<binary>(%s)", e.Operator.Kind.String())
 }
 
 type ExpressionFunctionCall struct {
@@ -24,38 +24,38 @@ type ExpressionFunctionCall struct {
 	Arguments    []Expression
 }
 
-func (e ExpressionFunctionCall) String() string {
-	return "<function-call>"
+func (e *ExpressionFunctionCall) String() string {
+	return fmt.Sprintf("<function-call>(%s)", e.FunctionName)
 }
 
 type ExpressionLiteral struct {
 	Value any
 }
 
-func (e ExpressionLiteral) String() string {
-	return "<literal>"
+func (e *ExpressionLiteral) String() string {
+	return fmt.Sprintf("<literal>(%v)", e.Value)
 }
 
-func dumpExpression(e Expression, indent int) string {
+func dumpExpression(expression Expression, indent int) string {
 	ans := []string{}
 	indentString := strings.Repeat("  ", indent)
 
-	switch e := e.(type) {
-	case ExpressionBinary:
-		ans = append(ans, "Binary")
-		ans = append(ans, indentString+e.Operator.String())
+	switch e := expression.(type) {
+	case *ExpressionBinary:
+		ans = append(ans, e.String())
 		ans = append(ans, indentString+dumpExpression(e.Left, indent+2))
 		ans = append(ans, indentString+dumpExpression(e.Right, indent+2))
-	case ExpressionFunctionCall:
-		ans = append(ans, "FunctionCall")
-		ans = append(ans, indentString+e.FunctionName)
-
+	case *ExpressionFunctionCall:
+		ans = append(ans, e.String())
 		for _, argument := range e.Arguments {
 			ans = append(ans, indentString+dumpExpression(argument, indent+2))
 		}
-	case ExpressionLiteral:
-		ans = append(ans, "Literal")
-		ans = append(ans, indentString+fmt.Sprintf("%v", e.Value))
+	case *ExpressionLiteral:
+		ans = append(ans, e.String())
+	case nil:
+		ans = append(ans, "<nil>")
+	default:
+		ans = append(ans, "Invalid")
 	}
 
 	return strings.Join(ans, "\n")
