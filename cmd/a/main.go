@@ -22,11 +22,12 @@ var (
 
 	rename         = app.Command("rename", "Rename a note file.")
 	renamePath     = rename.Arg("path", "File path.").Required().String()
-	renameInsecure = rename.Flag("insecure", "Skip the source filename verification.").Bool()
+	renameInsecure = rename.Flag("insecure", "Skip the source filename verification.").Short('i').Bool()
 
 	query          = app.Command("query", "Filter files in the base directory using a custom query language.")
 	queryDirectory = query.Arg("directory", "Base directory path.").Default("./").String()
-	queryQuery     = query.Flag("query", "The query to filter file metadatas.").Default("\"all\"").String()
+	queryQuery     = query.Flag("query", "The query to filter file metadatas.").Default("\"all\"").Short('q').String()
+	queryRecursive = query.Flag("recursive", "Recursively walk into the base directory.").Short('r').Bool()
 
 	// Default for the moment
 	options = filename.NewOptionsDefault()
@@ -69,7 +70,7 @@ func Rename() error {
 }
 
 func Query() error {
-	files, err := operation.Query(*queryDirectory, *queryQuery, options)
+	files, err := operation.Query(*queryDirectory, *queryRecursive, *queryQuery, options)
 	if err != nil {
 		return err
 	}

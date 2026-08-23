@@ -40,8 +40,7 @@ func filesRecursive(directory string) ([]string, error) {
 			return nil
 		}
 
-		myPath := filepath.Join(directory, info.Name())
-		ans = append(ans, myPath)
+		ans = append(ans, path)
 
 		return nil
 	})
@@ -55,13 +54,16 @@ type File struct {
 	Metadata *filename.Metadata
 }
 
-func Query(directory string, query string, options *filename.Options) ([]File, error) {
-	directoryAbs, err := filepath.Abs(directory)
-	if err != nil {
-		return nil, err
+func Query(directory string, isRecursive bool, query string, options *filename.Options) ([]File, error) {
+	var err error
+	var filePaths []string
+
+	if isRecursive {
+		filePaths, err = filesRecursive(directory)
+	} else {
+		filePaths, err = filesAtDepthOne(directory)
 	}
 
-	filePaths, err := filesAtDepthOne(directory)
 	if err != nil {
 		return nil, err
 	}
@@ -87,9 +89,8 @@ func Query(directory string, query string, options *filename.Options) ([]File, e
 		}
 
 		if match {
-			filePathAbs := filepath.Join(directoryAbs, filePath)
 			ans = append(ans, File{
-				Path:     filePathAbs,
+				Path:     filePath,
 				Metadata: metadata,
 			})
 		}
