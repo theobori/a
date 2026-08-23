@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	app = kingpin.New("a", "My opinionated note taking CLI tool.")
+	app = kingpin.New("a", "My opinionated tool to manage notes.")
 
 	create            = app.Command("create", "Create a new note file.")
 	createDirectory   = create.Arg("directory", "Base directory path.").Default("./").String()
-	createDisableOpen = create.Flag("disable-open", "Disable editor file opening after creating a new file.").Bool()
+	createDisableOpen = create.Flag("disable-open", "Disable editor file opening after the file creation.").Bool()
 
 	edit     = app.Command("edit", "Edit a note file.")
 	editPath = edit.Arg("path", "File path.").Required().String()

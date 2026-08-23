@@ -16,33 +16,33 @@ type Metadata struct {
 	options *Options
 }
 
-func (fm *Metadata) Filename() string {
+func (m *Metadata) Filename() string {
 	ans := ""
 
-	ans += fm.Title
-	if fm.Tags.Len() > 0 {
-		ans += "__"
+	ans += m.Title
+	if m.Tags.Len() > 0 {
+		ans += m.options.partsDelimitor
 
-		tagsList := fm.Tags.List()
+		tagsList := m.Tags.List()
 		slices.Sort(tagsList)
 
-		ans += strings.Join(tagsList, "_")
+		ans += strings.Join(tagsList, m.options.tagsDelimitor)
 	}
 
-	if len(fm.Ext) > 0 {
-		ans += fm.Ext
+	if len(m.Ext) > 0 {
+		ans += m.Ext
 	}
 
 	return ans
 }
 
-func (fm *Metadata) String() string {
-	return fm.Filename()
+func (m *Metadata) String() string {
+	return m.Filename()
 }
 
-func (fm *Metadata) AbsJoin(elem ...string) (string, error) {
+func (m *Metadata) AbsJoin(elem ...string) (string, error) {
 	// The nested join is a little hacky but needed because of elem...
-	return filepath.Abs(filepath.Join(filepath.Join(elem...), fm.Filename()))
+	return filepath.Abs(filepath.Join(filepath.Join(elem...), m.Filename()))
 }
 
 func NewMetadataWithOptions(title string, tags []string, ext string, options *Options) (*Metadata, error) {
@@ -115,12 +115,12 @@ func NewMetadataFromPath(path string, options *Options) (*Metadata, error) {
 
 	title := parts[0]
 
-	fm, err := NewMetadataWithOptions(title, tags, ext, options)
+	m, err := NewMetadataWithOptions(title, tags, ext, options)
 	if err != nil {
 		return nil, err
 	}
 
-	return fm, nil
+	return m, nil
 }
 
 func NewMetadataFromStdin(options *Options) (*Metadata, error) {

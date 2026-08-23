@@ -75,9 +75,10 @@ func (p *Parser) parseBinary() (Expression, error) {
 		return nil, err
 	}
 
-	// I want and to returns true by default on every branch
-	// for and.
-	// The opposite for or.
+	// I want and to returns true by default on every branch for 'and'.
+	// The opposite for 'or'.
+	//
+	// It works because atm there are only 2 binary operators.
 	if binary.Left == nil {
 		binary.Left = &ExpressionLiteral{Value: previousToken.Kind == KindAnd}
 	}
@@ -88,7 +89,7 @@ func (p *Parser) parseBinary() (Expression, error) {
 	return binary, nil
 }
 
-func (p *Parser) parseFunction() (Expression, error) {
+func (p *Parser) parseFunctionCall() (Expression, error) {
 	previousToken := p.peekPrevious()
 
 	arguments := []Expression{}
@@ -132,7 +133,7 @@ func (p *Parser) parseFilter() (Expression, error) {
 	case KindAnd, KindOr:
 		return p.parseBinary()
 	case KindTitle, KindTag, KindExt:
-		return p.parseFunction()
+		return p.parseFunctionCall()
 	default:
 		return nil, fmt.Errorf("The token '%s' is invalid.", token.String())
 	}

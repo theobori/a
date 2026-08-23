@@ -4,9 +4,11 @@
 
 [![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
-The name of the project is "a", pronounced \\eɪ\\.
+The name of the project is "a", pronounced \\eɪ\\. Yes.
 
-This GitHub repository is a [KISS](https://en.wikipedia.org/wiki/KISS_principle) project that contains a CLI wrote in the Go language.
+This GitHub repository is a [KISS](https://en.wikipedia.org/wiki/KISS_principle) project that contains a CLI wrote in the Go language. This CLI allows me to manage my note databases as files, each with a name that follows a naming convention. The tool supports nested folders, but it was originally designed to operate in folders with a depth of one, like a flat file system.
+
+It can create new notes, edit existing ones, and filter by metadata in the file names.
 
 ## Getting started
 
@@ -20,14 +22,207 @@ If you want to use the CLI, you can build and install the binary using the follo
 go install github.com/theobori/a/cmd/a
 ```
 
+### Environment variable
+
+You can set a value for the `EDITOR` environment variable, which will then be used for managing the editor program. If unset, its value will be `vi`.
+
+## File name scheme
+
+The project is entirely based on a specific file name scheme.
+
+### Grammar rules
+
+The file name scheme is described by the grammar rules in BNF format below.
+
+```bnf
+<filename> ::= <filename-no-ext> | <filename-no-ext> ".file-extension"
+<filename-no-ext> ::= (<title> | <title> "__" <tags>)
+
+<title> ::= <any-word>
+<tag> ::= <any-word>
+<tags> ::= <tag> | <tag> <tags-separator> <tags>
+
+<parts-separator> ::= "__"
+<tags-separator> ::= "_"
+
+<any-word> ::= "any-chars-sequence"
+```
+
+<!-- comment>
+TODO: Create these parameters for the query command
+<-->
+Note that `<parts-separator>` and `<tags-separator>` can be customized by changing the values of certain command-line parameters.
+
+## Dedicated query language
+
+The project uses a dedicated query language for searching notes. It is capable of compiling expressions into bytecode and then passing them to a stack-based bytecode virtual machine, which evaluates the bytecode and returns whether the expression matches the file name metadata.
+
+### Grammar Rules
+
+The dedicated query language is quite flexible in its syntax. It is described by the grammar rules in BNF format below.
+
+```bnf
+<expression> ::= <filter> | <literal>
+<mutiple-expressions> ::= <expression> | <expression> <mutiple-expressions>
+
+<filter> ::= <begin-expr> (<binary> | <function-call>) <end-expr>
+<literal> ::= <string>
+<string> ::= '"' "any-chars-sequence" '"'
+
+<binary> ::= <and> | <or>
+<and> ::= "and" <mutiple-expressions>
+<or> ::= "or" <mutiple-expressions>
+
+<function-call> ::= <title> | <tag> | <ext>
+<title> ::= "title" <expression>
+<tag> ::= "tag" <expression>
+<ext> ::= "ext" <expression>
+
+<begin-expr> ::= "("
+<end-expr> ::= ")"
+```
+
+### Specifications
+
+This section contains the language specifications.
+
+#### Native Functions
+
+The table below summarizes the features of the native functions.
+
+| Name | Description | Arguments count | Arguments type |
+| - | - | - | - |
+| **title** | Match the title of a note. | 1 | string |
+| **tag** | Match the tag of a note.. | 1 | string |
+| **ext** | Match the file extension of a note.. | 1 | string |
+
+#### Operators
+
+The table below summarizes the features of the operator.
+
+| Name | Description | Arguments count | Arguments type |
+| - | - | - | - |
+| **and** | Returns true if there are 0 arguments. Otherwise, returns true if all arguments are true. | 0 to unlimited | string, boolean |
+| **or** | Returns false if there are 0 arguments. Otherwise, returns true if any of the arguments is true. | 0 to unlimited | string, boolean |
+
+### Example
+
+Below is a simple expression.
+
+```elisp
+(or
+  (tag "medium")
+  (tag "hard"))
+```
+
+Below is a complex expression.
+
+```elisp
+(and
+  (tag "leetcode")
+  (or
+    (tag "medium")
+    (tag "hard"))
+  (ext ".md"))
+```
+
+Below is another complex expression.
+
+```elisp
+(and
+  (or 
+    (title "title1")
+    (title "title2))
+  (tag "tag1")
+  (and
+    (tag "tag2")
+    (tag "tag3")))
+```
+
 ## CLI
 
-TODO
+The tool's commands are described in this section.
 
-### Help Message
+### `help`
 
-Below is the CLI help message.
+This command displays the help message.
+
+### `create`
+
+This command is used to create a new note file in a specified directory. The creation process is interactive; the user is prompted to provide the various pieces of information needed to construct the file name. Below is its help message.
 
 ```text
-TODO
+usage: a create [<flags>] [<directory>]
+
+Create a new note file.
+
+
+Flags:
+  --[no-]help          Show context-sensitive help (also try --help-long and --help-man).
+  --[no-]disable-open  Disable editor file opening after creating a new file.
+
+Args:
+  [<directory>]  Base directory path.
 ```
+
+### `edit`
+
+This command is used to edit an existing note file by specifying a path. The `EDITOR` environment variable contains the name or path to a text editor that must be able to accept the path of the file to be edited as a positional argument. The tool will create a subprocess with this information. Below is its help message.
+
+```text
+usage: a edit <path>
+
+Edit a note file.
+
+
+Flags:
+  --[no-]help  Show context-sensitive help (also try --help-long and --help-man).
+
+Args:
+  <path>  File path.
+```
+
+### `rename`
+
+This command is used to rename an existing note file by specifying a path. The renaming process is interactive, just like when creating a file. Below is its help message.
+
+```text
+usage: a rename [<flags>] <path>
+
+Rename a note file.
+
+
+Flags:
+      --[no-]help      Show context-sensitive help (also try --help-long and --help-man).
+  -i, --[no-]insecure  Skip the source filename verification.
+medium
+Args:
+  <path>  File path.
+```
+
+### `query`
+
+This command is used to filter note files by specifying an expression in the dedicated query language that will match the metadata in the names of those files. Below is its help message.
+
+```text
+usage: a query [<flags>] [<directory>]
+
+Filter files in the base directory using a custom query language.
+
+
+Flags:
+      --[no-]help        Show context-sensitive help (also try --help-long and --help-man).
+  -q, --query="\"all\""  The query to filter file metadatas.
+  -r, --[no-]recursive   Recursively walk into the base directory.
+
+Args:
+  [<directory>]  Base directory path.
+```
+
+## Examples
+
+You can view the example of a note files directory with the [example](./example) folder.
+
+## Contribute
+
+If you'd like to contribute to the project, please follow the instructions provided in the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
