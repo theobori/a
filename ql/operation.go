@@ -1,32 +1,22 @@
 package ql
 
 const (
-	// TODO: Remove unused
-	OperationPush        byte = 0
-	OperationPop         byte = 1
-	OperationAnd         byte = 2
-	OperationOr          byte = 3
-	OperationTitle       byte = 4
-	OperationTag         byte = 5
-	OperationExt         byte = 6
-	OperationConstant    byte = 7
-	OperationJump        byte = 8
-	OperationJumpIfFalse byte = 9
-	OperationJumpIfTrue  byte = 10
-	OperationNot         byte = 11
-	OperationEnd         byte = 12
+	OperationPop         byte = 0
+	OperationTitle       byte = 1
+	OperationTag         byte = 2
+	OperationExt         byte = 3
+	OperationConstant    byte = 4
+	OperationJump        byte = 5
+	OperationJumpIfFalse byte = 6
+	OperationJumpIfTrue  byte = 7
+	OperationNot         byte = 8
+	OperationEnd         byte = 9
 )
 
 func NewStringFromOperation(b byte) string {
 	switch b {
-	case OperationPush:
-		return "OperationPush"
 	case OperationPop:
 		return "OperationPop"
-	case OperationAnd:
-		return "OperationAnd"
-	case OperationOr:
-		return "OperationOr"
 	case OperationTitle:
 		return "OperationTitle"
 	case OperationTag:

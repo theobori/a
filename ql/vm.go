@@ -70,7 +70,6 @@ func (vm *VM) run(ctx *Context) (bool, error) {
 				return false, err
 			}
 
-			// TODO: check
 			vm.stack.Push(!isTrue(v))
 		case OperationJumpIfFalse:
 			jumpIndex := vm.readByte()
