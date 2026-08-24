@@ -77,6 +77,11 @@ func Query() error {
 		return err
 	}
 
+	if len(files) == 0 {
+		fmt.Println("There are no matches.")
+		return nil
+	}
+
 	idx, err := fuzzyfinder.Find(
 		files,
 		func(i int) string {
