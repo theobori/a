@@ -1,7 +1,9 @@
 package filename
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -124,34 +126,39 @@ func NewMetadataFromPath(path string, options *Options) (*Metadata, error) {
 }
 
 func NewMetadataFromStdin(options *Options) (*Metadata, error) {
-	var err error
+	reader := bufio.NewReader(os.Stdin)
 
-	var title string
 	fmt.Print("Enter title: ")
-	_, err = fmt.Scan(&title)
+	title, err := reader.ReadString('\n')
 	if err != nil {
 		return nil, err
 	}
 
-	var tagsExpr string
-	fmt.Print("Enter tags (splitted by ','): ")
-	_, err = fmt.Scan(&tagsExpr)
+	fmt.Print("Enter tags splitted by ',' (press enter for none): ")
+	tagsExpr, err := reader.ReadString('\n')
 	if err != nil {
 		return nil, err
 	}
 
-	var ext string
-	fmt.Print("Enter the file extension (enter 'none' for none): ")
-	_, err = fmt.Scan(&ext)
+	fmt.Print("Enter the file extension (press enter for none): ")
+	ext, err := reader.ReadString('\n')
 	if err != nil {
 		return nil, err
-	}
-	if ext == "none" {
-		ext = ""
 	}
 
 	tags := strings.Split(tagsExpr, ",")
-	f, err := NewMetadataWithOptions(title, tags, ext, options)
+	// Prevention filter
+	filteredTags := []string{}
+	for _, tag := range tags {
+		tag := strings.TrimSpace(tag)
+		if tag == "" {
+			continue
+		}
+
+		filteredTags = append(filteredTags, tag)
+	}
+
+	f, err := NewMetadataWithOptions(title, filteredTags, ext, options)
 	if err != nil {
 		return nil, err
 	}

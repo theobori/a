@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -28,7 +29,7 @@ var (
 
 	query          = app.Command("query", "Filter files in the base directory using a custom query language.")
 	queryDirectory = query.Arg("directory", "Base directory path.").Default("./").String()
-	queryQuery     = query.Flag("query", "The query to filter file metadatas.").Default("\"all\"").Short('q').String()
+	queryQuery     = query.Flag("query", "The query to filter file metadatas.").Default("").Short('q').String()
 	queryRecursive = query.Flag("recursive", "Recursively walk into the base directory.").Short('r').Bool()
 
 	// Default for the moment
@@ -72,7 +73,24 @@ func Rename() error {
 }
 
 func Query() error {
-	files, err := operation.Query(*queryDirectory, *queryRecursive, *queryQuery, options)
+	var (
+		query string
+		err   error
+	)
+
+	if *queryQuery == "" {
+		reader := bufio.NewReader(os.Stdin)
+
+		fmt.Print("Enter the query: ")
+		query, err = reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+	} else {
+		query = *queryQuery
+	}
+
+	files, err := operation.Query(*queryDirectory, *queryRecursive, query, options)
 	if err != nil {
 		return err
 	}
@@ -92,9 +110,14 @@ func Query() error {
 				return ""
 			}
 
-			joinedTags := strings.Join(files[i].Metadata.Tags.List(), ", ")
+			tags := files[i].Metadata.Tags.List()
+			for i := range tags {
+				tags[i] = "\"" + tags[i] + "\""
+			}
 
-			return fmt.Sprintf("Title: %s\nTags: %s\nExtension: %s",
+			joinedTags := strings.Join(tags, ", ")
+
+			return fmt.Sprintf("Title: \"%s\"\nTags: [%s]\nExtension: \"%s\"",
 				files[i].Metadata.Title,
 				joinedTags,
 				files[i].Metadata.Ext)
