@@ -8,7 +8,7 @@ The name of the project is "a", pronounced \\eɪ\\. Yes.
 
 This GitHub repository is a [KISS](https://en.wikipedia.org/wiki/KISS_principle) project that contains a CLI wrote in the Go language. This CLI allows me to manage my note databases as files, each with a name that follows a naming convention. The tool supports nested folders, but it was originally designed to operate in folders with a depth of one, like a flat file system.
 
-It can create new notes, edit existing ones, and filter by metadata in the file names.
+It can create new notes, edit existing ones, and filter by their metadatas.
 
 ## Getting started
 
@@ -113,7 +113,7 @@ The table below summarizes the features of the operator.
 | - | - | - | - |
 | **and** | Returns true if there are 0 arguments. Otherwise, returns true if all arguments are true. | 0 to unlimited | string, boolean |
 | **or** | Returns false if there are 0 arguments. Otherwise, returns true if any of the arguments is true. | 0 to unlimited | string, boolean |
-| **not** | Returns true is the operand is [falsey](https://developer.mozilla.org/en-US/docs/Glossary/Falsy). Otherwise false. | 0 to unlimited | string, boolean |
+| **not** | Returns true is the operand is [falsey](https://developer.mozilla.org/en-US/docs/Glossary/Falsy). Otherwise false. | 1 | string, boolean |
 
 ### Example
 

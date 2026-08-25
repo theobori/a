@@ -49,7 +49,6 @@ func filesRecursive(directory string) ([]string, error) {
 }
 
 type File struct {
-	// Should always be absolute
 	Path     string
 	Metadata *filename.Metadata
 }
