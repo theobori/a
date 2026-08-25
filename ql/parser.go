@@ -126,12 +126,30 @@ func (p *Parser) parseString() (Expression, error) {
 	}, nil
 }
 
+func (p *Parser) parseNot() (Expression, error) {
+	expression, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.consume(KindRightParens)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ExpressionNot{
+		Expr: expression,
+	}, nil
+}
+
 func (p *Parser) parseFilter() (Expression, error) {
 	token := p.advance()
 
 	switch token.Kind {
 	case KindAnd, KindOr:
 		return p.parseBinary()
+	case KindNot:
+		return p.parseNot()
 	case KindTitle, KindTag, KindExt,
 		KindOnDate, KindFromDate, KindToDate:
 		return p.parseFunctionCall()

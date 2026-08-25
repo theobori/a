@@ -17,6 +17,7 @@ var ReservedKeywords = map[string]Kind{
 	"from-date": KindFromDate,
 	"to-date":   KindToDate,
 	"on-date":   KindOnDate,
+	"not":       KindNot,
 }
 
 func isIdentifierChar(b byte) bool {

@@ -65,13 +65,16 @@ The dedicated query language is quite flexible in its syntax. It is described by
 <expression> ::= <filter> | <literal>
 <mutiple-expressions> ::= <expression> | <expression> <mutiple-expressions>
 
-<filter> ::= <begin-expr> (<binary> | <function-call>) <end-expr>
+<filter> ::= <begin-expr> (<unary> | <binary> | <function-call>) <end-expr>
 <literal> ::= <string>
 <string> ::= '"' "any-chars-sequence" '"'
 
 <binary> ::= <and> | <or>
 <and> ::= "and" <mutiple-expressions>
 <or> ::= "or" <mutiple-expressions>
+
+<unary> ::= <not>
+<not> ::= "not" <expression>
 
 <function-call> ::= <title> | <tag> | <ext> | <from-date> | <to-date> | <on-date>
 <title> ::= "title" <expression>
@@ -110,6 +113,7 @@ The table below summarizes the features of the operator.
 | - | - | - | - |
 | **and** | Returns true if there are 0 arguments. Otherwise, returns true if all arguments are true. | 0 to unlimited | string, boolean |
 | **or** | Returns false if there are 0 arguments. Otherwise, returns true if any of the arguments is true. | 0 to unlimited | string, boolean |
+| **not** | Returns true is the operand is [falsey](https://developer.mozilla.org/en-US/docs/Glossary/Falsy). Otherwise false. | 0 to unlimited | string, boolean |
 
 ### Example
 
@@ -148,6 +152,7 @@ Below is another complex expression.
   (tag "tag1")
   (from-date "2020-01-01")
   (to-date "2020-02-01")
+  (not (title "title1"))
   (and
     (tag "tag2")
     (tag "tag3")))

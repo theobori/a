@@ -64,6 +64,17 @@ func (c *Compiler) compileOr(binary *ExpressionBinary) error {
 	return c.compileBinaryGeneric(binary, OperationJumpIfTrue)
 }
 
+func (c *Compiler) compileNot(not *ExpressionNot) error {
+	err := c.compile(not.Expr)
+	if err != nil {
+		return err
+	}
+
+	c.emitByte(OperationNot)
+
+	return nil
+}
+
 func (c *Compiler) compileBinary(binary *ExpressionBinary) error {
 	kind := binary.Operator.Kind
 
@@ -178,6 +189,8 @@ func (c *Compiler) compile(expression Expression) error {
 	switch e := expression.(type) {
 	case *ExpressionBinary:
 		return c.compileBinary(e)
+	case *ExpressionNot:
+		return c.compileNot(e)
 	case *ExpressionFunctionCall:
 		return c.compileFunctionCall(e)
 	case *ExpressionLiteral:

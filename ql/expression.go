@@ -36,6 +36,14 @@ func (e *ExpressionLiteral) String() string {
 	return fmt.Sprintf("<literal>(%v)", e.Value)
 }
 
+type ExpressionNot struct {
+	Expr Expression
+}
+
+func (e *ExpressionNot) String() string {
+	return fmt.Sprintf("<not>(%v)", e.Expr)
+}
+
 func dumpExpression(expression Expression, indent int) string {
 	ans := []string{}
 	indentString := strings.Repeat("  ", indent)
@@ -45,6 +53,9 @@ func dumpExpression(expression Expression, indent int) string {
 		ans = append(ans, e.String())
 		ans = append(ans, indentString+dumpExpression(e.Left, indent+2))
 		ans = append(ans, indentString+dumpExpression(e.Right, indent+2))
+	case *ExpressionNot:
+		ans = append(ans, e.String())
+		ans = append(ans, indentString+dumpExpression(e.Expr, indent+2))
 	case *ExpressionFunctionCall:
 		ans = append(ans, e.String())
 		for _, argument := range e.Arguments {

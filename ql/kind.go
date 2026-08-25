@@ -28,6 +28,8 @@ func (k *Kind) String() string {
 		return "RightParens"
 	case KindEOF:
 		return "EOF"
+	case KindNot:
+		return "Not"
 	default:
 		return "Unknown"
 	}
@@ -46,4 +48,5 @@ const (
 	KindLeftParens
 	KindRightParens
 	KindEOF
+	KindNot
 )
