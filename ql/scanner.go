@@ -9,11 +9,14 @@ import (
 const EOFByte = 0x00
 
 var ReservedKeywords = map[string]Kind{
-	"and":   KindAnd,
-	"or":    KindOr,
-	"title": KindTitle,
-	"tag":   KindTag,
-	"ext":   KindExt,
+	"and":       KindAnd,
+	"or":        KindOr,
+	"title":     KindTitle,
+	"tag":       KindTag,
+	"ext":       KindExt,
+	"from-date": KindFromDate,
+	"to-date":   KindToDate,
+	"on-date":   KindOnDate,
 }
 
 func isIdentifierChar(b byte) bool {

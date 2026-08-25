@@ -80,7 +80,15 @@ func Query(directory string, isRecursive bool, query string, options *filename.O
 			return nil, err
 		}
 
-		ctx := ql.Context{Metadata: metadata}
+		fileInfo, err := os.Stat(filePath)
+		if err != nil {
+			return nil, err
+		}
+
+		ctx := ql.Context{
+			FilenameMetadata: metadata,
+			Date:             fileInfo.ModTime(),
+		}
 
 		vm := ql.NewVM(chunk)
 		match, err := vm.Interpret(&ctx)

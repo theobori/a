@@ -55,7 +55,7 @@ Note that `<parts-separator>` and `<tags-separator>` can be customized by changi
 
 ## Dedicated query language
 
-The project uses a dedicated query language for searching notes. It is capable of compiling expressions into bytecode and then passing them to a stack-based bytecode virtual machine, which evaluates the bytecode and returns whether the expression matches the file name metadata.
+The project uses a dedicated query language for searching notes. It is capable of compiling expressions into bytecode and then passing them to a stack-based bytecode virtual machine, which evaluates the bytecode and returns whether the expression matches some of the file metadatas.
 
 ### Grammar Rules
 
@@ -73,10 +73,13 @@ The dedicated query language is quite flexible in its syntax. It is described by
 <and> ::= "and" <mutiple-expressions>
 <or> ::= "or" <mutiple-expressions>
 
-<function-call> ::= <title> | <tag> | <ext>
+<function-call> ::= <title> | <tag> | <ext> | <from-date> | <to-date> | <on-date>
 <title> ::= "title" <expression>
 <tag> ::= "tag" <expression>
 <ext> ::= "ext" <expression>
+<from-date> ::= "from-date" <expression>
+<to-date> ::= "to-date" <expression>
+<on-date> ::= "on-date" <expression>
 
 <begin-expr> ::= "("
 <end-expr> ::= ")"
@@ -93,8 +96,11 @@ The table below summarizes the features of the native functions.
 | Name | Description | Arguments count | Arguments type |
 | - | - | - | - |
 | **title** | Match the title of a note. | 1 | string |
-| **tag** | Match the tag of a note.. | 1 | string |
-| **ext** | Match the file extension of a note.. | 1 | string |
+| **tag** | Match the tag of a note. | 1 | string |
+| **ext** | Match the file extension of a note. | 1 | string |
+| **from-date** | Returns true if the file has been modified on a date or after. | 1 | date string |
+| **to-date** | Returns true if the file has been modified on a date or before. | 1 | date string |
+| **on-date** | Returns true if the file has been modified on a date. | 1 | date tring |
 
 #### Operators
 
@@ -140,6 +146,8 @@ Below is another complex expression.
     (title "title1")
     (title "title2))
   (tag "tag1")
+  (from-date "2020-01-01")
+  (to-date "2020-02-01")
   (and
     (tag "tag2")
     (tag "tag3")))

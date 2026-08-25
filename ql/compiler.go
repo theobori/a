@@ -79,7 +79,7 @@ func (c *Compiler) compileBinary(binary *ExpressionBinary) error {
 
 func (c *Compiler) compileTitle(functionCall *ExpressionFunctionCall) error {
 	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function 'title' should have only one argument.")
+		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
 	}
 
 	c.compile(functionCall.Arguments[0])
@@ -90,7 +90,7 @@ func (c *Compiler) compileTitle(functionCall *ExpressionFunctionCall) error {
 
 func (c *Compiler) compileTag(functionCall *ExpressionFunctionCall) error {
 	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function 'tag' should have only one argument.")
+		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
 	}
 
 	c.compile(functionCall.Arguments[0])
@@ -101,7 +101,7 @@ func (c *Compiler) compileTag(functionCall *ExpressionFunctionCall) error {
 
 func (c *Compiler) compileExt(functionCall *ExpressionFunctionCall) error {
 	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function 'ext' should have only one argument.")
+		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
 	}
 
 	c.compile(functionCall.Arguments[0])
@@ -110,9 +110,40 @@ func (c *Compiler) compileExt(functionCall *ExpressionFunctionCall) error {
 	return nil
 }
 
+func (c *Compiler) compileFromDate(functionCall *ExpressionFunctionCall) error {
+	if len(functionCall.Arguments) != 1 {
+		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
+	}
+
+	c.compile(functionCall.Arguments[0])
+	c.emitByte(OperationFromDate)
+
+	return nil
+}
+
+func (c *Compiler) compileToDate(functionCall *ExpressionFunctionCall) error {
+	if len(functionCall.Arguments) != 1 {
+		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
+	}
+
+	c.compile(functionCall.Arguments[0])
+	c.emitByte(OperationToDate)
+
+	return nil
+}
+
+func (c *Compiler) compileOnDate(functionCall *ExpressionFunctionCall) error {
+	if len(functionCall.Arguments) != 1 {
+		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
+	}
+
+	c.compile(functionCall.Arguments[0])
+	c.emitByte(OperationOnDate)
+
+	return nil
+}
+
 func (c *Compiler) compileFunctionCall(functionCall *ExpressionFunctionCall) error {
-	// Since its only native functions,
-	// I prefer to check the functions arity earlier at compile time.
 	switch functionCall.FunctionName {
 	case "title":
 		return c.compileTitle(functionCall)
@@ -120,6 +151,12 @@ func (c *Compiler) compileFunctionCall(functionCall *ExpressionFunctionCall) err
 		return c.compileTag(functionCall)
 	case "ext":
 		return c.compileExt(functionCall)
+	case "from-date":
+		return c.compileFromDate(functionCall)
+	case "to-date":
+		return c.compileToDate(functionCall)
+	case "on-date":
+		return c.compileOnDate(functionCall)
 	default:
 		return fmt.Errorf("The function '%s' is unknown.", functionCall.FunctionName)
 	}

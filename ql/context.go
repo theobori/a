@@ -1,7 +1,12 @@
 package ql
 
-import "github.com/theobori/a/filename"
+import (
+	"time"
+
+	"github.com/theobori/a/filename"
+)
 
 type Context struct {
-	Metadata *filename.Metadata
+	FilenameMetadata *filename.Metadata
+	Date             time.Time
 }

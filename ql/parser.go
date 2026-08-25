@@ -132,7 +132,8 @@ func (p *Parser) parseFilter() (Expression, error) {
 	switch token.Kind {
 	case KindAnd, KindOr:
 		return p.parseBinary()
-	case KindTitle, KindTag, KindExt:
+	case KindTitle, KindTag, KindExt,
+		KindOnDate, KindFromDate, KindToDate:
 		return p.parseFunctionCall()
 	default:
 		return nil, fmt.Errorf("The token '%s' is invalid.", token.String())

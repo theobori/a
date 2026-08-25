@@ -14,6 +14,12 @@ func (k *Kind) String() string {
 		return "Tag"
 	case KindExt:
 		return "Ext"
+	case KindFromDate:
+		return "FromDate"
+	case KindToDate:
+		return "ToDate"
+	case KindOnDate:
+		return "OnDate"
 	case KindString:
 		return "String"
 	case KindLeftParens:
@@ -33,6 +39,9 @@ const (
 	KindTitle
 	KindTag
 	KindExt
+	KindFromDate
+	KindToDate
+	KindOnDate
 	KindString
 	KindLeftParens
 	KindRightParens
