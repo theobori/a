@@ -115,6 +115,7 @@ The table below summarizes the features of the operator.
 | **or** | Returns false if there are 0 arguments. Otherwise, returns true if any of the arguments is true. | 0 to unlimited | string, boolean |
 | **not** | Returns true is the operand is [falsey](https://developer.mozilla.org/en-US/docs/Glossary/Falsy). Otherwise false. | 1 | string, boolean |
 | **if** | Returns true is the condition evaluates to true and the if branch evaluates to true, or, if the condition evaluates to false and the else branch evaluate to true. By default, the else branch is set to false. | 2 or 3. | string, boolean |
+| **when** | Same as **if** but with only 2 arguments. | 2. | string, boolean |
 
 ### Example
 

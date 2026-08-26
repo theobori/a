@@ -142,7 +142,7 @@ func (p *Parser) parseNot() (Expression, error) {
 	}, nil
 }
 
-func (p *Parser) parseIf() (Expression, error) {
+func (p *Parser) parseIf(isWhen bool) (Expression, error) {
 	condition, err := p.parseExpression()
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ func (p *Parser) parseIf() (Expression, error) {
 	}
 
 	var elseBranch Expression
-	if p.peek().Kind == KindRightParens {
+	if isWhen || p.peek().Kind == KindRightParens {
 		elseBranch = &ExpressionLiteral{Value: false}
 	} else {
 		elseBranch, err = p.parseExpression()
@@ -181,7 +181,9 @@ func (p *Parser) parseFilter() (Expression, error) {
 	case KindAnd, KindOr:
 		return p.parseBinary()
 	case KindIf:
-		return p.parseIf()
+		return p.parseIf(false)
+	case KindWhen:
+		return p.parseIf(true)
 	case KindNot:
 		return p.parseNot()
 	case KindTitle, KindTag, KindExt,

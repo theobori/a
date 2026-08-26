@@ -32,6 +32,8 @@ func (k *Kind) String() string {
 		return "Not"
 	case KindIf:
 		return "If"
+	case KindWhen:
+		return "When"
 	default:
 		return "Unknown"
 	}
@@ -52,4 +54,5 @@ const (
 	KindEOF
 	KindNot
 	KindIf
+	KindWhen
 )
