@@ -65,7 +65,7 @@ The dedicated query language is quite flexible in its syntax. It is described by
 <expression> ::= <filter> | <literal>
 <mutiple-expressions> ::= <expression> | <expression> <mutiple-expressions>
 
-<filter> ::= <begin-expr> (<unary> | <binary> | <function-call>) <end-expr>
+<filter> ::= <begin-expr> (<unary> | <binary> | <function-call> | <conditional>) <end-expr>
 <literal> ::= <string>
 <string> ::= '"' "any-chars-sequence" '"'
 
@@ -75,6 +75,11 @@ The dedicated query language is quite flexible in its syntax. It is described by
 
 <unary> ::= <not>
 <not> ::= "not" <expression>
+
+<conditional> ::= <if> | <when> | <unless>
+<if> ::= <expression> <expression> | <expression> <expression> <expression>
+<when> ::= <expression> <expression> 
+<unless> ::= <expression> <expression> 
 
 <function-call> ::= <title> | <tag> | <ext> | <from-date> | <to-date> | <on-date>
 <title> ::= "title" <expression>
