@@ -34,6 +34,8 @@ func (k *Kind) String() string {
 		return "If"
 	case KindWhen:
 		return "When"
+	case KindUnless:
+		return "Unless"
 	default:
 		return "Unknown"
 	}
@@ -55,4 +57,5 @@ const (
 	KindNot
 	KindIf
 	KindWhen
+	KindUnless
 )

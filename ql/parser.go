@@ -43,7 +43,7 @@ func (p *Parser) consume(kind Kind) (Token, error) {
 	return token, nil
 }
 
-func (p *Parser) parseBinary() (Expression, error) {
+func (p *Parser) parseBinary() (*ExpressionBinary, error) {
 	previousToken := p.peekPrevious()
 
 	binary := &ExpressionBinary{nil, previousToken, nil}
@@ -89,7 +89,7 @@ func (p *Parser) parseBinary() (Expression, error) {
 	return binary, nil
 }
 
-func (p *Parser) parseFunctionCall() (Expression, error) {
+func (p *Parser) parseFunctionCall() (*ExpressionFunctionCall, error) {
 	previousToken := p.peekPrevious()
 
 	arguments := []Expression{}
@@ -118,7 +118,7 @@ func (p *Parser) parseFunctionCall() (Expression, error) {
 	}, nil
 }
 
-func (p *Parser) parseString() (Expression, error) {
+func (p *Parser) parseString() (*ExpressionLiteral, error) {
 	previous := p.peekPrevious()
 
 	return &ExpressionLiteral{
@@ -126,7 +126,7 @@ func (p *Parser) parseString() (Expression, error) {
 	}, nil
 }
 
-func (p *Parser) parseNot() (Expression, error) {
+func (p *Parser) parseNot() (*ExpressionNot, error) {
 	expression, err := p.parseExpression()
 	if err != nil {
 		return nil, err
@@ -142,7 +142,7 @@ func (p *Parser) parseNot() (Expression, error) {
 	}, nil
 }
 
-func (p *Parser) parseIf(isWhen bool) (Expression, error) {
+func (p *Parser) parseIf(isWhen bool) (*ExpressionIf, error) {
 	condition, err := p.parseExpression()
 	if err != nil {
 		return nil, err
@@ -184,6 +184,15 @@ func (p *Parser) parseFilter() (Expression, error) {
 		return p.parseIf(false)
 	case KindWhen:
 		return p.parseIf(true)
+	case KindUnless:
+		i, err := p.parseIf(true)
+		if err != nil {
+			return nil, err
+		}
+
+		i.Condition = &ExpressionNot{Expr: i.Condition}
+
+		return i, nil
 	case KindNot:
 		return p.parseNot()
 	case KindTitle, KindTag, KindExt,
