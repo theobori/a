@@ -114,6 +114,7 @@ The table below summarizes the features of the operator.
 | **and** | Returns true if there are 0 arguments. Otherwise, returns true if all arguments are true. | 0 to unlimited | string, boolean |
 | **or** | Returns false if there are 0 arguments. Otherwise, returns true if any of the arguments is true. | 0 to unlimited | string, boolean |
 | **not** | Returns true is the operand is [falsey](https://developer.mozilla.org/en-US/docs/Glossary/Falsy). Otherwise false. | 1 | string, boolean |
+| **if** | Returns true is the condition evaluates to true and the if branch evaluates to true, or, if the condition evaluates to false and the else branch evaluate to true. By default, the else branch is set to false. | 2 or 3. | string, boolean |
 
 ### Example
 
@@ -145,16 +146,21 @@ Below is a complex expression.
 Below is another complex expression.
 
 ```elisp
-(and
+(or
   (or 
     (title "title1")
-    (title "title2))
+    (title "title2"))
+
   (tag "tag1")
-  (from-date "2020-01-01")
+
+  (if (from-date "2020-01-01")
+    (title "title3")
+  (title "title4"))
+
   (to-date "2020-02-01")
-  (not (title "title1"))
+
   (and
-    (tag "tag2")
+    (not (tag "tag2"))
     (tag "tag3")))
 ```
 

@@ -44,6 +44,16 @@ func (e *ExpressionNot) String() string {
 	return fmt.Sprintf("<not>(%v)", e.Expr)
 }
 
+type ExpressionIf struct {
+	Condition  Expression
+	IfBranch   Expression
+	ElseBranch Expression
+}
+
+func (e *ExpressionIf) String() string {
+	return "<if>"
+}
+
 func dumpExpression(expression Expression, indent int) string {
 	ans := []string{}
 	indentString := strings.Repeat("  ", indent)
@@ -56,6 +66,11 @@ func dumpExpression(expression Expression, indent int) string {
 	case *ExpressionNot:
 		ans = append(ans, e.String())
 		ans = append(ans, indentString+dumpExpression(e.Expr, indent+2))
+	case *ExpressionIf:
+		ans = append(ans, e.String())
+		ans = append(ans, indentString+dumpExpression(e.Condition, indent+2))
+		ans = append(ans, indentString+dumpExpression(e.IfBranch, indent+2))
+		ans = append(ans, indentString+dumpExpression(e.ElseBranch, indent+2))
 	case *ExpressionFunctionCall:
 		ans = append(ans, e.String())
 		for _, argument := range e.Arguments {

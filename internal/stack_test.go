@@ -7,7 +7,7 @@ import (
 func TestStack(t *testing.T) {
 	s := NewEmptyStack[int]()
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		s.Push(i)
 		if s.Len() != i+1 {
 			t.Fatal()

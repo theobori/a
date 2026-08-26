@@ -75,6 +75,42 @@ func (c *Compiler) compileNot(not *ExpressionNot) error {
 	return nil
 }
 
+func (c *Compiler) compileIf(i *ExpressionIf) error {
+	err := c.compile(i.Condition)
+	if err != nil {
+		return err
+	}
+	c.emitByte(OperationJumpIfFalse)
+	c.emitByte(0)
+	c.emitByte(OperationPop)
+	conditionJumpIndex := len(c.chunk.Code) - 2
+
+	err = c.compile(i.IfBranch)
+	if err != nil {
+		return err
+	}
+	c.emitByte(OperationJump)
+	c.emitByte(0)
+	ifJumpIndex := len(c.chunk.Code) - 1
+
+	if len(c.chunk.Code) >= 256 {
+		return fmt.Errorf("Cannot jump above 255.")
+	}
+	c.chunk.Code[conditionJumpIndex] = byte(len(c.chunk.Code))
+
+	err = c.compile(i.ElseBranch)
+	if err != nil {
+		return err
+	}
+
+	if len(c.chunk.Code) >= 256 {
+		return fmt.Errorf("Cannot jump above 255.")
+	}
+	c.chunk.Code[ifJumpIndex] = byte(len(c.chunk.Code))
+
+	return nil
+}
+
 func (c *Compiler) compileBinary(binary *ExpressionBinary) error {
 	kind := binary.Operator.Kind
 
@@ -88,68 +124,16 @@ func (c *Compiler) compileBinary(binary *ExpressionBinary) error {
 	}
 }
 
-func (c *Compiler) compileTitle(functionCall *ExpressionFunctionCall) error {
-	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
+func (c *Compiler) compileFunctionCallGeneric(functionCall *ExpressionFunctionCall, argumentsCount int, operationCode byte) error {
+	if len(functionCall.Arguments) != argumentsCount {
+		return fmt.Errorf("The function named '%s' should have %d argument.", functionCall.FunctionName, argumentsCount)
 	}
 
-	c.compile(functionCall.Arguments[0])
-	c.emitByte(OperationTitle)
-
-	return nil
-}
-
-func (c *Compiler) compileTag(functionCall *ExpressionFunctionCall) error {
-	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
+	for i := range argumentsCount {
+		c.compile(functionCall.Arguments[i])
 	}
 
-	c.compile(functionCall.Arguments[0])
-	c.emitByte(OperationTag)
-
-	return nil
-}
-
-func (c *Compiler) compileExt(functionCall *ExpressionFunctionCall) error {
-	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
-	}
-
-	c.compile(functionCall.Arguments[0])
-	c.emitByte(OperationExt)
-
-	return nil
-}
-
-func (c *Compiler) compileFromDate(functionCall *ExpressionFunctionCall) error {
-	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
-	}
-
-	c.compile(functionCall.Arguments[0])
-	c.emitByte(OperationFromDate)
-
-	return nil
-}
-
-func (c *Compiler) compileToDate(functionCall *ExpressionFunctionCall) error {
-	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
-	}
-
-	c.compile(functionCall.Arguments[0])
-	c.emitByte(OperationToDate)
-
-	return nil
-}
-
-func (c *Compiler) compileOnDate(functionCall *ExpressionFunctionCall) error {
-	if len(functionCall.Arguments) != 1 {
-		return fmt.Errorf("The function named '%s' should have only one argument.", functionCall.FunctionName)
-	}
-
-	c.compile(functionCall.Arguments[0])
-	c.emitByte(OperationOnDate)
+	c.emitByte(operationCode)
 
 	return nil
 }
@@ -157,17 +141,17 @@ func (c *Compiler) compileOnDate(functionCall *ExpressionFunctionCall) error {
 func (c *Compiler) compileFunctionCall(functionCall *ExpressionFunctionCall) error {
 	switch functionCall.FunctionName {
 	case "title":
-		return c.compileTitle(functionCall)
+		return c.compileFunctionCallGeneric(functionCall, 1, OperationTitle)
 	case "tag":
-		return c.compileTag(functionCall)
+		return c.compileFunctionCallGeneric(functionCall, 1, OperationTag)
 	case "ext":
-		return c.compileExt(functionCall)
+		return c.compileFunctionCallGeneric(functionCall, 1, OperationExt)
 	case "from-date":
-		return c.compileFromDate(functionCall)
+		return c.compileFunctionCallGeneric(functionCall, 1, OperationFromDate)
 	case "to-date":
-		return c.compileToDate(functionCall)
+		return c.compileFunctionCallGeneric(functionCall, 1, OperationToDate)
 	case "on-date":
-		return c.compileOnDate(functionCall)
+		return c.compileFunctionCallGeneric(functionCall, 1, OperationOnDate)
 	default:
 		return fmt.Errorf("The function '%s' is unknown.", functionCall.FunctionName)
 	}
@@ -191,6 +175,8 @@ func (c *Compiler) compile(expression Expression) error {
 		return c.compileBinary(e)
 	case *ExpressionNot:
 		return c.compileNot(e)
+	case *ExpressionIf:
+		return c.compileIf(e)
 	case *ExpressionFunctionCall:
 		return c.compileFunctionCall(e)
 	case *ExpressionLiteral:

@@ -142,12 +142,46 @@ func (p *Parser) parseNot() (Expression, error) {
 	}, nil
 }
 
+func (p *Parser) parseIf() (Expression, error) {
+	condition, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+	ifBranch, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+
+	var elseBranch Expression
+	if p.peek().Kind == KindRightParens {
+		elseBranch = &ExpressionLiteral{Value: false}
+	} else {
+		elseBranch, err = p.parseExpression()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	_, err = p.consume(KindRightParens)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ExpressionIf{
+		Condition:  condition,
+		IfBranch:   ifBranch,
+		ElseBranch: elseBranch,
+	}, nil
+}
+
 func (p *Parser) parseFilter() (Expression, error) {
 	token := p.advance()
 
 	switch token.Kind {
 	case KindAnd, KindOr:
 		return p.parseBinary()
+	case KindIf:
+		return p.parseIf()
 	case KindNot:
 		return p.parseNot()
 	case KindTitle, KindTag, KindExt,
