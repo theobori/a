@@ -29,6 +29,7 @@ var (
 
 	query          = app.Command("query", "Filter files in the base directory using a custom query language.")
 	queryDirectory = query.Arg("directory", "Base directory path.").Default("./").String()
+	queryThen      = query.Arg("then", "Action to execute with the query result, 'edit' or 'print'.").Default("print").String()
 	queryQuery     = query.Flag("query", "The query to filter file metadatas.").Default("").Short('q').String()
 	queryRecursive = query.Flag("recursive", "Recursively walk into the base directory.").Short('r').Bool()
 
@@ -126,7 +127,16 @@ func Query() error {
 		return err
 	}
 
-	fmt.Println(files[idx].Path)
+	path := files[idx].Path
+
+	switch *queryThen {
+	case "print":
+		fmt.Println(path)
+	case "edit":
+		return operation.Edit(path)
+	default:
+		return fmt.Errorf("Unknown 'then' action.")
+	}
 
 	return nil
 }

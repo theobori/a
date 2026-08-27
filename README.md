@@ -237,18 +237,19 @@ Args:
 This command is used to filter note files by specifying an expression in the dedicated query language that will match the metadata in the names of those files. The matched file are passed to [go-fuzzyfinder](github.com/ktr0731/go-fuzzyfinder) that exposed them via an intuitive interactive TUI. Below is its help message.
 
 ```text
-usage: a query [<flags>] [<directory>]
+usage: a query [<flags>] [<directory>] [<then>]
 
 Filter files in the base directory using a custom query language.
 
 
 Flags:
-      --[no-]help        Show context-sensitive help (also try --help-long and --help-man).
-  -q, --query=""  The query to filter file metadatas.
-  -r, --[no-]recursive   Recursively walk into the base directory.
+      --[no-]help       Show context-sensitive help (also try --help-long and --help-man).
+  -q, --query=""        The query to filter file metadatas.
+  -r, --[no-]recursive  Recursively walk into the base directory.
 
 Args:
   [<directory>]  Base directory path.
+  [<then>]       Action to execute with the query result, 'edit' or 'print'.
 ```
 
 ## Examples
