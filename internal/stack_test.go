@@ -15,7 +15,12 @@ func TestStack(t *testing.T) {
 	}
 
 	for i := 99; i >= 0; i-- {
-		if s.Top() != i {
+		top, err := s.Top()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if top != i {
 			t.Fatal()
 		}
 

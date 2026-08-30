@@ -77,13 +77,23 @@ func (vm *VM) run(ctx *Context) (bool, error) {
 		case OperationJumpIfFalse:
 			jumpIndex := vm.readByte()
 
-			if isFalsey(vm.stack.Top()) {
+			top, err := vm.stack.Top()
+			if err != nil {
+				return false, err
+			}
+
+			if isFalsey(top) {
 				vm.ip = int(jumpIndex)
 			}
 		case OperationJumpIfTrue:
 			jumpIndex := vm.readByte()
 
-			if isTrue(vm.stack.Top()) {
+			top, err := vm.stack.Top()
+			if err != nil {
+				return false, err
+			}
+
+			if isTrue(top) {
 				vm.ip = int(jumpIndex)
 			}
 		case OperationJump:

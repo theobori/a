@@ -12,8 +12,17 @@ func (s *Stack[T]) Push(elem T) {
 	s.arr = append(s.arr, elem)
 }
 
-func (s *Stack[T]) Top() T {
-	return s.arr[len(s.arr)-1]
+func (s *Stack[T]) Top() (T, error) {
+	var ans T
+
+	size := s.Len()
+	if size == 0 {
+		return ans, fmt.Errorf("Empty stack.")
+	}
+
+	ans = s.arr[size-1]
+
+	return ans, nil
 }
 
 func (s *Stack[T]) Pop() (T, error) {
