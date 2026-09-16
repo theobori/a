@@ -112,8 +112,8 @@ func Query() error {
 			}
 
 			tags := files[i].Metadata.Tags.List()
-			for i := range tags {
-				tags[i] = "\"" + tags[i] + "\""
+			for j := range tags {
+				tags[j] = "\"" + tags[j] + "\""
 			}
 
 			joinedTags := strings.Join(tags, ", ")

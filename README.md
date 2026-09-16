@@ -92,6 +92,7 @@ The dedicated query language is quite flexible in its syntax. It is described by
 <begin-expr> ::= "("
 <end-expr> ::= ")"
 ```
+The language also support comment per line with the `;; comment` syntax.
 
 ### Specifications
 
@@ -157,15 +158,23 @@ Below is another complex expression.
   (or 
     (title "title1")
     (title "title2"))
-
+  ;;
+  ;; Comment 1
+  ;;
   (tag "tag1")
-
+  ;;
+  ;; Comment 2
+  ;;
   (if (from-date "2020-01-01")
     (title "title3")
   (title "title4"))
-
+  ;;
+  ;; Comment 3
+  ;;
   (to-date "2020-02-01")
-
+  ;;
+  ;; Comment 4
+  ;;
   (and
     (not (tag "tag2"))
     (tag "tag3")))

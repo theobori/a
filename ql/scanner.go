@@ -107,6 +107,22 @@ func (s *Scanner) scanReservedKeyword() error {
 	return nil
 }
 
+func (s *Scanner) scanComment() error {
+	secondCh := s.advance()
+	if secondCh != ';' {
+		return fmt.Errorf("Invalid comment syntax")
+	}
+
+	for {
+		ch := s.advance()
+		if ch == '\n' || ch == EOFByte {
+			break
+		}
+	}
+
+	return nil
+}
+
 func (s *Scanner) scan() error {
 	ch := s.advance()
 
@@ -119,6 +135,8 @@ func (s *Scanner) scan() error {
 		break
 	case '"', '\'':
 		return s.scanString(ch)
+	case ';':
+		return s.scanComment()
 	default:
 		if isIdentifierChar(ch) {
 			return s.scanReservedKeyword()

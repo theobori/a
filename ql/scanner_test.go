@@ -41,6 +41,19 @@ func TestScanner(t *testing.T) {
 				{Kind: KindEOF, Lexeme: ""},
 			},
 		},
+		{
+			source: "(or (ext \".txt\")) ;; (title \"test-.*\"))",
+			expectedTokens: []Token{
+				{Kind: KindLeftParens, Lexeme: "("},
+				{Kind: KindOr, Lexeme: "or"},
+				{Kind: KindLeftParens, Lexeme: "("},
+				{Kind: KindExt, Lexeme: "ext"},
+				{Kind: KindString, Lexeme: "\".txt\"", Literal: ".txt"},
+				{Kind: KindRightParens, Lexeme: ")"},
+				{Kind: KindRightParens, Lexeme: ")"},
+				{Kind: KindEOF, Lexeme: ""},
+			},
+		},
 		// TODO: add tests
 	}
 
