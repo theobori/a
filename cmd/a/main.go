@@ -32,6 +32,7 @@ var (
 	queryThen      = query.Arg("then", "Action to execute with the query result, 'edit' or 'print'.").Default("print").String()
 	queryQuery     = query.Flag("query", "The query to filter file metadatas.").Default("").Short('q').String()
 	queryRecursive = query.Flag("recursive", "Recursively walk into the base directory.").Short('r').Bool()
+	queryFile      = query.Flag("file", "Read ql code from a file.").Default("").Short('f').String()
 
 	// Default for the moment
 	options = filename.NewOptionsDefault()
@@ -79,7 +80,16 @@ func Query() error {
 		err   error
 	)
 
-	if *queryQuery == "" {
+	if *queryFile != "" {
+		bytes, err := os.ReadFile(*queryFile)
+		if err != nil {
+			return err
+		}
+
+		query = string(bytes)
+	} else if *queryQuery != "" {
+		query = *queryQuery
+	} else {
 		reader := bufio.NewReader(os.Stdin)
 
 		fmt.Print("Enter the query: ")
@@ -87,8 +97,6 @@ func Query() error {
 		if err != nil {
 			return err
 		}
-	} else {
-		query = *queryQuery
 	}
 
 	files, err := operation.Query(*queryDirectory, *queryRecursive, query, options)

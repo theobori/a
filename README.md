@@ -180,6 +180,26 @@ Below is another complex expression.
     (tag "tag3")))
 ```
 
+Below is a simple expression with a specific condition.
+
+```elisp
+;; ql code for matching all dsa notes
+
+(unless (tag "not-dsa")
+    (or
+        ;;
+        ;; platform tags
+        ;;
+        (tag "leetcode")
+        (tag "codeforces")
+        ;;
+        ;; difficulty tags
+        ;;
+        (tag "easy")
+        (tag "medium")
+        (tag "hard")))
+```
+
 ## CLI
 
 The tool's commands are described in this section.
@@ -255,6 +275,7 @@ Flags:
       --[no-]help       Show context-sensitive help (also try --help-long and --help-man).
   -q, --query=""        The query to filter file metadatas.
   -r, --[no-]recursive  Recursively walk into the base directory.
+  -f, --file=""         Read ql code from a file.
 
 Args:
   [<directory>]  Base directory path.
