@@ -1,6 +1,6 @@
 # My opinionated tool to manage notes
 
-[![build badge](https://github.com/theobori/fleur/actions/workflows/build.yml/badge.svg)](https://github.com/theobori/fleur/actions/workflows/build.yml)
+[![build badge](https://github.com/theobori/a/actions/workflows/build.yml/badge.svg)](https://github.com/theobori/a/actions/workflows/build.yml)
 
 [![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
@@ -78,8 +78,8 @@ The dedicated query language is quite flexible in its syntax. It is described by
 
 <conditional> ::= <if> | <when> | <unless>
 <if> ::= <expression> <expression> | <expression> <expression> <expression>
-<when> ::= <expression> <expression> 
-<unless> ::= <expression> <expression> 
+<when> ::= <expression> <expression>
+<unless> ::= <expression> <expression>
 
 <function-call> ::= <title> | <tag> | <ext> | <from-date> | <to-date> | <on-date>
 <title> ::= "title" <expression>
@@ -155,7 +155,7 @@ Below is another complex expression.
 
 ```elisp
 (or
-  (or 
+  (or
     (title "title1")
     (title "title2"))
   ;;
